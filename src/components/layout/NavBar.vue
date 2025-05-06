@@ -47,11 +47,6 @@
 import { ref } from 'vue'
 
 const showMobileMenu = ref(false)
-
-const toggleMenu = (event) => {
-  event.stopPropagation()
-  showMobileMenu.value = !showMobileMenu.value
-}
 </script>
 
 <style>
