@@ -12,7 +12,9 @@
         <a
           role="button"
           class="navbar-burger"
-          v-bind:class="{ 'is-active': showMobileMenu }"
+          v-bind:class="{
+            'is-active': showMobileMenu,
+          }"
           aria-label="menu"
           aria-expanded="false"
           data-target="navbarBasicExample"
@@ -28,13 +30,19 @@
       <div id="navbarBasicExample" class="navbar-menu" :class="{ 'is-active': showMobileMenu }">
         <div class="navbar-end">
           <RouterLink
+            v-on:click="showMobileMenu = false"
             to="/"
             class="navbar-item is-active"
             style="color: #fff"
             active-class="is-active"
             >Notes</RouterLink
           >
-          <RouterLink to="/stats" class="navbar-item" style="color: #fff" active-class="is-active"
+          <RouterLink
+            v-on:click="showMobileMenu = false"
+            to="/stats"
+            class="navbar-item"
+            style="color: #fff"
+            active-class="is-active"
             >Stats</RouterLink
           >
         </div>

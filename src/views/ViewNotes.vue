@@ -1,67 +1,34 @@
 <template>
   <div class="notes">
-    <div class="card has-background-success-dark p-4 mb-4">
-      <div class="field">
-        <div class="control">
-          <textarea
-            name="textarea"
-            class="textarea"
-            placeholder="Add a new note"
-            v-model="textAreaValue"
-            ref="textarearef"
-          />
-        </div>
-      </div>
-
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <button
-            class="button is-link has-background-success"
-            v-on:click="submitForm"
-            v-bind:disabled="!textAreaValue"
-          >
-            Add New Note
-          </button>
-        </div>
-      </div>
-    </div>
-    <ViewNote v-for="unitNote in notes" :key="unitNote.id" v-bind:unitNote />
+    <AddEditNotes v-on:pull-note-value="newNote" />
+    <ViewNote
+      v-for="unitNote in store.state"
+      :key="unitNote.id"
+      v-bind:unitNote
+      v-on:deleteClicked="deleteNote"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import ViewNote from '@/components/notes/ViewNote.vue'
+import { useNoteStore } from '@/stores/storeNotes'
+import AddEditNotes from '@/components/notes/AddEditNotes.vue'
 
-const notes = ref([
-  {
-    id: 'id1',
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem consequuntur laborum totam nobis, laboriosam asperiores soluta eum quasi dolore iste dolorem, mollitia eos iusto! Tenetur non fuga accusamus repellat modi.',
-  },
-  {
-    id: 'id2',
-    content:
-      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem consequuntur laborum totam nobis, laboriosam asperiores soluta eum quasi dolore iste dolorem, mollitia eos iusto! Tenetur non fuga accusamus repellat modi.',
-  },
-])
+const store = useNoteStore()
 
-const textAreaValue = ref('')
-const textarearef = ref<HTMLElement>()
-
-const submitForm = () => {
-  const currentDate = new Date().getTime()
-  const id = currentDate.toString()
-
+const newNote = (value: string) => {
+  console.log('newNote', value)
+  const currentDate: number = new Date().getTime()
+  const id: string = currentDate.toString()
   const note = {
     id,
-    content: textAreaValue.value,
+    content: value,
   }
+  store.actions.addNote(note)
+}
 
-  notes.value.unshift(note)
-  textAreaValue.value = ''
-  if (textarearef.value) {
-    textarearef.value.focus()
-  }
+const deleteNote = (id: string) => {
+  store.actions.removeNote(id)
 }
 </script>

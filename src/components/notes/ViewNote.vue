@@ -3,20 +3,42 @@
     <div class="card-content">
       <div class="content">
         {{ unitNote.content }}
+        <div class="has-text-right has-text-grey-light mt-2">
+          <small>{{ chLength }}</small>
+        </div>
       </div>
     </div>
     <footer class="card-footer">
-      <a href="#" class="card-footer-item">Edit</a>
-      <a href="#" class="card-footer-item">Delete</a>
+      <RouterLink class="card-footer-item" v-bind:to="`/editeNotes/${unitNote.id}`"
+        >Edit</RouterLink
+      >
+      <a href="#" class="card-footer-item" v-on:click.prevent="handleDeleteClick">Delete</a>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   unitNote: {
     type: Object,
     required: true,
   },
 })
+
+const emit = defineEmits(['deleteClicked'])
+
+// prettier-ignore
+const chLength = computed(() => {
+  const description = props.unitNote.content.length > 1
+    ? 'characters'
+    : 'character'
+
+  return `${props.unitNote.content.length} ${description}`
+})
+
+const handleDeleteClick = () => {
+  emit('deleteClicked', props.unitNote.id)
+}
 </script>
