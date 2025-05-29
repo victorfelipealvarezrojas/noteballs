@@ -1,12 +1,7 @@
 <template>
   <div class="notes">
     <AddEditNotes v-on:pull-note-value="newNote" />
-    <ViewNote
-      v-for="unitNote in store.state"
-      :key="unitNote.id"
-      v-bind:unitNote
-      v-on:deleteClicked="deleteNote"
-    />
+    <ViewNote v-for="unitNote in store.state" :key="unitNote.id" v-bind:unitNote />
   </div>
 </template>
 
@@ -26,9 +21,5 @@ const newNote = (value: string) => {
     content: value,
   }
   store.actions.addNote(note)
-}
-
-const deleteNote = (id: string) => {
-  store.actions.removeNote(id)
 }
 </script>
