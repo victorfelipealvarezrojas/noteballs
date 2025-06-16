@@ -13,11 +13,10 @@ import AddEditNotes from '@/components/notes/AddEditNotes.vue'
 const store = useNoteStore()
 
 const newNote = (value: string) => {
-  console.log('newNote', value)
   const currentDate: number = new Date().getTime()
   const id: string = currentDate.toString()
   const note = {
-    id,
+    id: id,
     content: value,
   }
   store.actions.addNote(note)

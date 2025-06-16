@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
-import { db, collection, query, getDocs } from '@/ts/firebase'
+import { db, collection, onSnapshot } from '@/ts/firebase'
+import { addDoc, deleteDoc, doc, orderBy, query, setDoc } from 'firebase/firestore'
+
+const noteCollectionRef = collection(db, 'notes')
+const noteCollectionQuery = query(noteCollectionRef, orderBy('date', 'desc'))
 
 interface Note {
   id: string
@@ -13,7 +17,7 @@ export interface NoteStore {
   actions: {
     getNotes: () => void
     addNote: (note: Note) => void
-    removeNote: (id: string) => void
+    removeNote: (date: string) => void
     update: (id: string, content: string) => void
   }
   getters: {
@@ -27,28 +31,37 @@ export const useNoteStore = defineStore('store-notes', (): NoteStore => {
   return {
     state: notes,
     actions: {
-      async getNotes() {
-        const querySnapshot = await getDocs(query(collection(db, 'notes')))
-        querySnapshot.forEach((doc) => {
-          const note = doc.data() as Note
-          notes.push(note)
+      getNotes() {
+        onSnapshot(noteCollectionQuery, (querySnapshot) => {
+          const _notes: Note[] = []
+          querySnapshot.forEach((doc) => {
+            const note = {
+              id: doc.id,
+              content: doc.data().content,
+            }
+            _notes.push(note)
+          })
+          notes.length = 0
+          notes.push(..._notes)
         })
       },
 
-      addNote(note: { id: string; content: string }) {
-        notes.unshift(note)
+      async addNote(note: { id: string; content: string }) {
+        const currentDate = new Date().getTime()
+        const date = currentDate.toString()
+
+        await addDoc(noteCollectionRef, {
+          content: note.content,
+          date,
+        })
       },
-      removeNote(id: string) {
-        const index = notes.findIndex((note) => note.id === id)
-        if (index !== -1) {
-          notes.splice(index, 1)
-        }
+      async removeNote(date: string) {
+        const noteRef = doc(noteCollectionRef, date)
+        await deleteDoc(noteRef)
       },
       update(id: string, content: string) {
-        const index = notes.findIndex((note) => note.id === id)
-        if (index !== -1) {
-          notes[index].content = content
-        }
+        const noteRef = doc(noteCollectionRef, id)
+        setDoc(noteRef, { content }, { merge: true })
       },
     },
     getters: {
